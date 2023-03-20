@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mShop</title>
+<link rel="stylesheet" href="assets/css/jquery.mobile-1.4.5.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/css/lightgallery.css" rel="stylesheet">
+<link href="assets/css/owl.carousel.min.css" rel="stylesheet">
+<link href="assets/css/owl.theme.default.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/select.css">
+<link rel="stylesheet" href="assets/css/vertical.min.css">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="PushNotification.js"></script>
+<script src="assets/js/jquery-1.12.2-patched.js"></script>
+<script src="assets/js/jquery.mobile-1.4.5.min.js"></script>
+<!-- <script src="assets/js/mloyal.js"></script> -->
+<script src="assets/js/mloyalnew.js"></script>
+<!-- <script src="assets/js/jquery.geocomplete.js"></script> -->
+
+ <script type="text/javascript" charset="utf-8">
+        var pictureSource; // picture source
+        var destinationType; // sets the format of returned value 
+        var deviceType;
+
+        // Wait for Cordova to connect with the device
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+
+         
+
+
+            //toast('Loading app..');
+            
+
+            deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : (navigator.userAgent.match(/BlackBerry/i)) == "BlackBerry" ? "BlackBerry" : "null";
+            if (deviceType == 'null')
+                deviceType = 'Android';
+
+
+			receivedEvent('deviceready');
+        
+            var permissions = cordova.plugins.permissions;
+
+            var list = [
+                permissions.CAMERA,
+                //permissions.GET_ACCOUNTS,
+                //permissions.READ_SMS,
+                //permissions.ACCESS_COARSE_LOCATION,
+                //permissions.ACCESS_FINE_LOCATION
+
+            ];
+
+            permissions.hasPermission(permissions.CAMERA, function(status) {
+                if (status.hasPermission) {
+                    //alert("Yes :D ");
+                } else {
+                    permissions.requestPermission(permissions.CAMERA, successc, errorc);
+
+                    function errorc() {
+                      //  alert('Camera permission is not turned on');
+                    }
+
+                    function successc(status) {
+                        if (!status.hasPermission) error();
+                    }
+                }
+            });
+			
+			
+			
+			
+
+            pictureSource = navigator.camera.PictureSourceType;
+            destinationType = navigator.camera.DestinationType;
+            //showGeolocation();
+
+
+        
+        }
+
+        function startWatch() {
+            if (SMS) SMS.startWatch(function() {
+                // alert('watching', 'watching started');
+            }, function() {
+                //alert('failed to start watching');
+            });
+        }
+
+        function stopWatch() {
+            if (SMS) SMS.stopWatch(function() {
+                //alert('watching', 'watching stopped');
+            }, function() {
+                //alert('failed to stop watching');
+            });
+        }
+
+        function clearCache() {
+            navigator.camera.cleanup();
+        }
+
+        function getPath() {
+            var str = location.pathname;
+            var i = str.lastIndexOf('/');
+            return str.substring(0, i + 1);
+        }
+
+        var my_media = null;
+
+        function playAudio(src) {
+
+            $("#wait").css("display", "block");
+            // Create Media object from src
+
+            my_media = new Media(getPath() + src, onSuccess, onError);
+
+            // Play audio
+            $("#wait").css("display", "none");
+            my_media.play();
+
+        }
+
+        // Pause audio
+        // 
+        function pauseAudio() {
+            if (my_media) {
+                my_media.pause();
+            }
+        }
+
+        // Stop audio
+        // 
+        function stopAudio() {
+            if (my_media) {
+                my_media.stop();
+            }
+
+        }
+
+        // onSuccess Callback
+        //
+        function onSuccess() {
+            console.log("playAudio():Audio Success");
+        }
+
+        // onError Callback 
+        //
+        function onError(error) {
+            alert('Problem in playing audio');
+        }
+
+        // Set audio position
+        // 
+        function setAudioPosition(position) {
+            document.getElementById('audio_position').innerHTML = position;
+        }
+
+        /* get all contacts from device */
+    </script>
+
+</head>
+
+<body>
+
+
+	<!--<div id="wait" style="display:none;width:70px;height:70px;border:0px solid black;position:absolute;top:80%;left:50%;padding:2px; margin-left: -35px; margin-top: -35px"><img src="assets/images/loader.gif" width="60" alt="" height="60" /></div>-->
+<!--Sign up page-->
+
+	
+	
+	
+<!--Sign up page-->
+<div data-role="page" data-dom-cache="true" id="login" class="bg-white full_height">
+	<div data-role="header" data-position="fixed" class="bg-white b_0 border-none"> 
+		<div class="login_header">
+			<a href="#" class="login_logo">
+				<img src="assets/images/login_logo.png" alt="" class="img-responsive" />
+			</a>
+		</div>
+	</div>
+		<div role="main" class="ui-content p_0 bg_transparent login_content">
+			<div class="login_content">
+				<div class="login_inner">
+					<h3 class="login_heading">Sign In to Continue</h3>						
+					<!--<div class="form-group mobile_input">
+						<div class="input_icon">
+							<img src="assets/images/mobile-icon.png" alt="">
+						</div>
+						<div class="input-group">
+							<input type="tel" class="login-input" data-role="none" id="username2" name="username2" placeholder="Mobile Number" />
+						</div>						
+					</div>-->
+					<div class="ui-grid-a form-group mobile_input">
+						<div class="ui-block-a" style="width:83px;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="forgot_mobile_prefix1" readonly/>
+						</div>
+						<div class="ui-block-b" style="flex-grow: 1">
+							<div class="input_icon">
+								<img src="assets/images/mobile-icon.png" alt="">
+							</div>
+							<div class="input-group">
+								<input type="tel" class="login-input pl-5" data-role="none" id="username2" name="username2" placeholder="Mobile Number" />
+							</div>
+						 </div>
+				    </div>
+					<div class="form-group password_input">	
+						<div class="input_icon">
+							<img src="assets/images/passwordd.png" alt="">
+						</div>
+						<div class="input-group">
+							<input type="password" class="login-input" data-role="none" id="password_myacc2" placeholder="PIN" />
+							<!-- <label for="password" class="login_label">PIN</label> -->
+						</div>
+						<div class="forgot_pass mt-10 text-right"><a href="#get_OTP">Forgot PIN</a></div>
+					</div>	
+					
+					<a href="javascript:authenticate2();" id="login_button2" class="btn btn_primary login_btn">Sign In</a>
+					
+					<div class="login_or mt-10 mb-10">or</div>
+
+					<a href="#categoriesPage" id="login_button2_skip" class="btn btn_primary login_btn">Skip</a>
+					
+					<!--<div class="login_options">
+						<ul>
+							<li>
+								<a href="#" class="google_link">
+									<img src="assets/images/google_logo.png" class="img-responsive" alt="">
+									<span>Google</span>
+								</a>
+							</li>
+							<li>
+								<a href="#" class="fb_link">
+									<img src="assets/images/fb_logo.png" class="img-responsive" alt="">
+									<span>Facebook</span>
+								</a>
+							</li>
+						</ul>
+					</div>-->
+					
+					<div class="login_liner mt-20 text-center">Not yet a member, <a href="#get_OTP">Sign up</a></div>
+					
+					<!-- <div class="login_or mt-20 mb-10">or</div>
+					
+					<div class="text-center"><a href="#dashboard" class="skip_btn">Skip</a></div> -->
+					
+				</div>
+			</div>
+		</div>		
+	</div>
+<!--/Sign up page--> 
+	
+	
+<!--Sign up page-->
+<div data-role="page" data-dom-cache="true" id="get_OTP" class="full_height bg-white">
+	<div data-role="header" data-position="fixed" class="bg-white b_0"> 
+		<div class="login_header">
+			<a href="#" class="login_logo">
+				<img src="assets/images/login_logo.png" alt="" class="img-responsive" />
+			</a>
+		</div>
+	</div>
+	<div role="main" class="ui-content p_0 bg_transparent login_content">
+		<div class="login_content">					
+			<div class="login_inner">
+				<h3 class="login_heading">Signup with phone number</h3>						
+				<!--<div class="form-group mobile_input">
+					<div class="input_icon">
+						<img src="assets/images/mobile-icon.png" alt="">
+					</div>
+					<div class="input-group">
+						<input type="tel" class="login-input" placeholder="Mobile Number" data-role="none" id="forgot_mobile" />
+					</div>	
+				</div>-->
+				<div class="ui-grid-a form-group mobile_input">
+						<div class="ui-block-a" style="width:83px;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="forgot_mobile_prefix2" readonly/>
+						</div>
+						<div class="ui-block-b" style="flex-grow: 1">
+							<div class="input_icon">
+								<img src="assets/images/mobile-icon.png" alt="">
+							</div>
+							<div class="input-group">
+								<input type="tel" class="login-input pl-5" placeholder="Mobile Number" data-role="none" id="forgot_mobile" />
+							</div>
+						 </div>
+				 </div>
+				<a href="javascript:getotp();" class="btn btn_primary login_btn">Send PIN</a>
+			</div>
+		</div>
+	</div>		
+</div>
+<!--/Sign up page--> 
+	
+<!--OTP page-->
+<div data-role="page" data-dom-cache="true" id="submit_OTP" class="full_height bg-white">
+		<div data-role="header" data-position="fixed" class="bg_transparent b_0"> 
+			<div class="login_header">
+				<a href="#" class="login_logo">
+					<img src="assets/images/login_logo.png" alt="" class="img-responsive" />
+				</a>
+			</div>
+		</div>
+		<div role="main" class="ui-content p_0 bg_transparent login_content">
+			<div class="login_content">
+				<div class="login_inner">
+					<h3 class="login_heading">LOG IN</h3>
+					<!--<div class="form-group">
+						<div class="custom-input mobile_input">
+							<div class="input_icon">
+								<img src="assets/images/mobile-icon.png" alt="">
+							</div>
+						  	<div class="input-group">
+								<input type="tel" id="username" name="username" class="login-input" data-role="none" placeholder="Mobile Number" />
+							</div>	
+						</div>
+						<div class="clear"></div>
+					</div>-->
+					<div class="ui-grid-a form-group mobile_input">
+						<div class="ui-block-a" style="width:30%;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="forgot_mobile_prefix3" readonly/>
+						</div>
+						<div class="ui-block-b" style="width:70%;">
+							<div class="input_icon">
+								<img src="assets/images/mobile-icon.png" alt="">
+							</div>
+							<div class="input-group">
+								<input type="tel" id="username" name="username" class="login-input" data-role="none" placeholder="Mobile Number" />
+							</div>
+						 </div>
+						 <div class="clear"></div>
+				 </div>
+					<p class="login_text">Please enter 4 digit code (PIN) sent on your mobile number</p>
+					<div class="form-group">
+						<div class="ui-grid-c">
+							<input type="password" placeholder="Code" id="dealerpassword" style="display:none;border-bottom: 0" data-role="none" />
+							<div class="ui-block-a padding0_10px">
+								<input id="dealercodeBox1" type="number" maxlength="1" class="otp_input" onkeyup="onDealerKeyUpEvent(1, event)" onfocus="onDealerFocusEvent(1)" data-role="none" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+							  </div>
+							  <div class="ui-block-b padding0_10px">
+								<input id="dealercodeBox2" type="number" maxlength="1" class="otp_input" onkeyup="onDealerKeyUpEvent(2, event)" onfocus="onDealerFocusEvent(2)" data-role="none" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+							  </div>
+							  <div class="ui-block-c padding0_10px">
+								<input id="dealercodeBox3" type="number" maxlength="1" class="otp_input" onkeyup="onDealerKeyUpEvent(3, event)" onfocus="onDealerFocusEvent(3)" data-role="none" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+							  </div>
+							  <div class="ui-block-d padding0_10px">
+								<input id="dealercodeBox4" type="number" maxlength="1" class="otp_input" onkeyup="onDealerKeyUpEvent(4, event)" onfocus="onDealerFocusEvent(4)" data-role="none" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+							  </div>
+						</div>
+					</div>	
+					<div class="form-group text-right">
+						<a href="#get_OTP" class="resend_otp_link">Resend PIN</a>
+					</div>
+					<a href="#" id="login_button" class="btn btn_primary login_btn">SUBMIT</a>
+				</div>
+			</div>
+		</div>		
+	</div>
+<!--/OTP page--> 
+
+<!--Sign up page-->
+	<div data-role="page" data-dom-cache="true" id="sign_up" class="full_height login_bg">
+		<div data-role="header" data-position="fixed" class="bg-white b_0 main_header ui-header ui-bar-inherit ui-header-fixed slidedown" data-tap-toggle="false" role="banner"> 
+			<div class="header_left">
+				<a href="#" class="back_btn" data-rel="back" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">				
+				<div class="main_logo">
+					<img src="assets/images/logo.png" class="img-responsive" alt="">
+				</div>
+			</div>
+			<div class="header_right">
+
+			</div>
+		</div>
+		<div role="main" class="ui-content p_0 bg_transparent">
+			<div class="login_screen">
+				<div class="login_content">
+					<div class="login_inner text-center">
+						<h3 class="login_heading">PROFILE</h3>
+						<div class="form-group mobile_input">
+							<div class="input_icon">
+								<img src="assets/images/usser.png" alt="">
+							</div>
+							<input type="text" class="login-input" id="update_firstname" placeholder="FIRST NAME" data-role="none">
+						</div>
+						<div class="form-group mobile_input">
+							<div class="input_icon">
+								<img src="assets/images/usser.png" alt="">
+							</div>
+							<input type="text" class="login-input" id="update_lastname" placeholder="LAST NAME" data-role="none">
+						</div>
+						<div class="form-group mobile_input">
+							<div class="input_icon">
+								<img src="assets/images/msg.png" alt="">
+							</div>
+							<input type="email" class="login-input" id="update_email" placeholder="EMAIL" data-role="none">
+						</div>
+						<div class="form-group">
+						<label class="input_label">DATE OF BIRTH:</label>
+							<div class="dob_input">
+								<div class="input_icon">
+									<img src="assets/images/calendar_icon.png" alt="">
+								</div>
+								<select name="update_dd" id="update_dd" class="login-input-dob" data-role="none">
+									  <option value="00">DD</option>
+									  <option value="01">01</option>
+									  <option value="02">02</option>
+									  <option value="03">03</option>
+									  <option value="04">04</option>
+									  <option value="05">05</option>
+									  <option value="06">06</option>
+									  <option value="07">07</option>
+									  <option value="08">08</option>
+									  <option value="09">09</option>
+									  <option value="10">10</option>
+									  <option value="11">11</option>
+									  <option value="12">12</option>
+									  <option value="13">13</option>
+									  <option value="14">14</option>
+									  <option value="15">15</option>
+									  <option value="16">16</option>
+									  <option value="17">17</option>
+									  <option value="18">18</option>
+									  <option value="19">19</option>
+									  <option value="20">20</option>
+									  <option value="21">21</option>
+									  <option value="22">22</option>
+									  <option value="23">23</option>
+									  <option value="24">24</option>
+									  <option value="25">25</option>
+									  <option value="26">26</option>
+									  <option value="27">27</option>
+									  <option value="28">28</option>
+									  <option value="29">29</option>
+									  <option value="30">30</option>
+									  <option value="31">31</option>
+								</select>
+							</div>
+							<div class="dob_input">
+								<div class="input_icon">
+									<img src="assets/images/calendar_icon.png" alt="">
+								</div>
+								<select name="update_mm" id="update_mm" class="login-input-dob" data-role="none">
+									 <option value="00">MM</option>
+									 <option value="01">Jan</option>
+									 <option value="02">Feb</option>
+									 <option value="03">Mar</option>
+									 <option value="04">Apr</option>
+									 <option value="05">May</option>
+									 <option value="06">June</option>
+									 <option value="07">July</option>
+									 <option value="08">Aug</option>
+									 <option value="09">Sept</option>
+									 <option value="10">Oct</option>
+									 <option value="11">Nov</option>
+									 <option value="12">Dec</option>
+								</select>
+							</div>
+							<div class="dob_input m_0">
+								<div class="input_icon">
+									<img src="assets/images/calendar_icon.png" alt="">
+								</div>
+								<select name="update_yyyy" id="update_yyyy" class="login-input-dob" data-role="none">
+									<option value="0">YYYY</option>
+									<option value="1945">1945</option>
+									<option value="1946">1946</option>
+									<option value="1947">1947</option>
+									<option value="1948">1948</option>
+									<option value="1949">1949</option>
+									<option value="1950">1950</option>
+									<option value="1951">1951</option>
+									<option value="1952">1952</option>
+									<option value="1953">1953</option>
+									<option value="1954">1954</option>
+									<option value="1955">1955</option>
+									<option value="1956">1956</option>
+									<option value="1957">1957</option>
+									<option value="1958">1958</option>
+									<option value="1959">1959</option>
+									<option value="1960">1960</option>
+									<option value="1961">1961</option>
+									<option value="1962">1962</option>
+									<option value="1963">1963</option>
+									<option value="1964">1964</option>
+									<option value="1965">1965</option>
+									<option value="1966">1966</option>
+									<option value="1967">1967</option>
+									<option value="1968">1968</option>
+									<option value="1969">1969</option>
+									<option value="1970">1970</option>
+									<option value="1971">1971</option>
+									<option value="1972">1972</option>
+									<option value="1973">1973</option>
+									<option value="1974">1974</option>
+									<option value="1975">1975</option>
+									<option value="1976">1976</option>
+									<option value="1977">1977</option>
+									<option value="1978">1978</option>
+									<option value="1979">1979</option>
+									<option value="1980">1980</option>
+									<option value="1981">1981</option>
+									<option value="1982">1982</option>
+									<option value="1983">1983</option>
+									<option value="1984">1984</option>
+									<option value="1985">1985</option>
+									<option value="1986">1986</option>
+									<option value="1987">1987</option>
+									<option value="1988">1988</option>
+									<option value="1989">1989</option>
+									<option value="1990">1990</option>
+									<option value="1991">1991</option>
+									<option value="1992">1992</option>
+									<option value="1993">1993</option>
+									<option value="1994">1994</option>
+									<option value="1995">1995</option>
+									<option value="1996">1996</option>
+									<option value="1997">1997</option>
+									<option value="1998">1998</option>
+									<option value="1999">1999</option>
+									<option value="2000">2000</option>
+									<option value="2001">2001</option>
+									<option value="2002">2002</option>
+									<option value="2003">2003</option>
+									<option value="2004">2004</option>
+									<option value="2005">2005</option>
+									<option value="2006">2006</option>
+									<option value="2007">2007</option>
+									<option value="2008">2008</option>
+									<option value="2009">2009</option>
+									<option value="2010">2010</option>
+									<option value="2011">2011</option>
+									<option value="2012">2012</option>
+									<option value="2013">2013</option>
+									<option value="2014">2014</option>
+									<option value="2015">2015</option>
+									<option value="2016">2016</option>
+									<option value="2017">2017</option>
+									<option value="2018">2018</option>
+									<option value="2019">2019</option>
+									<option value="2020">2020</option>
+								</select>
+							</div>
+							<div class="clear"></div>							
+						</div><br>
+						
+						<!-- <div class="form-group">
+							<input type="text" id="update_address" class="login-input" placeholder="COMPLETE ADDRESS" data-role="none">
+						</div> -->
+						<div id="sign_up_addressdiv" style="margin-bottom: 25px;" onclick="javascript:toggleadressDiv();">
+							<span class="sadd_signup">Saved Addresses +</span>
+						</div>
+						<div id="sign_up_addressdiv2" style="display: none;"></div>
+						
+						
+						<a href="#" class="btn btn_primary login_btn" id="update_button">SUBMIT</a>
+						<!-- <p class="already_text">Already have m�Loyal account? <a href="#get_OTP">log In</a></p> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+
+<!--dashboard-->
+
+<div data-role="page" data-dom-cache="true" id="dashboard" class="bg-white">
+   <div data-role="header" data-position="fixed" class="bg-white b_00 main_header" data-tap-toggle="false"> 
+			<div class="header_left">
+				<a href="#sidemenu" class="sideMenu" data-role="none">
+					<img src="assets/images/menu_btn.png" class="img-responsive" alt="">
+				</a>
+			</div>
+			<div class="header_center">
+				<div class="login_header">
+					<a href="#" class="main_logo">
+						<img src="assets/images/logo.png" alt="" class="img-responsive" />
+					</a>
+				</div>
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+					<a href="javascript:viewcart();">
+						<img src="assets/images/product_cart_new.png" alt=""/>
+					</a>
+					 <a href="javascript:viewwishlist();">
+						<img src="assets/images/wishlist_icon.png" alt=""/>
+					</a>
+				</div>
+			</div>
+		</div>
+            <div data-role="content" class="ui-content p_0"> 				
+             	<!--<div id="main_slider" class="home_carousel owl-carousel owl-theme">
+					<img id="slide1img" alt="banner1">
+					<img id="slide2img" alt="banner2">
+					<img id="slide3img" alt="banner3">
+				</div>--> 
+				<div class="rating_section">
+					<div class="dashboard_content bb1">
+						<!-- <div class="main_logo">
+							<img src="assets/images/logo_dashboard.png" class="img-responsive width70" alt="">
+						</div>
+						<h3>Supermarket/Convenience Store</h3> -->
+						<div class="timing_section">
+							<div class="timing_inner">
+								<p class="timing_head">Timings:</p>
+								<h4>08:00 - 22:00</h4>
+							</div>
+							<div class="timing_inner">
+								<p class="timing_head">Call:</p>
+								<h4><a href="tel:16516"><img src="assets/images/call_icon.png" alt="">16516</a></h4>
+								<!-- <p>For Home Delivery</p> -->
+							</div>
+						</div>
+					</div>
+					<h4 class="heading2 text-center mb-5">We Offer</h4>
+					<div id="main_slider" class="home_carousel owl-carousel owl-theme">
+						<img id="slide1img" src="https://taghash.co/mloyalshops/smarket/uploads/offers/p_offer1.jpg" alt="banner1" onclick="javascript:searchprodnamebyname_none('dove shampoo');">
+						<img id="slide2img" src="https://taghash.co/mloyalshops/smarket/uploads/offers/p_offer2.jpg" alt="banner2" onclick="javascript:searchprodnamebyname_none('horlicks');">
+						<img id="slide3img" src="https://taghash.co/mloyalshops/smarket/uploads/offers/p_offer3.jpg" alt="banner3" onclick="javascript:searchprodnamebyname_none('godrej protekt');">
+					</div>
+					<div class="dashboard_carousel owl-carousel owl-theme">
+						<div class="info_item">
+							<img src="https://taghash.co/mloyalshops/smarket/newdesign/assets/images/offer1.jpg" alt="offer1">
+						</div>
+						<div class="info_item">
+							<img src="https://taghash.co/mloyalshops/smarket/newdesign/assets/images/offer2.jpg" alt="offer2">
+						</div>
+					</div>
+					
+					<div class="order_type">
+						<label onclick="javascript:setorderMode('delivery');">
+							<div class="sel_order_type">
+								<img src="assets/images/delivery_icon.png" alt="">
+								<h3>Order Now</h3>
+							</div>
+							<div class="sel_order_custom">
+								<!--<input type="radio" data-role="none" value="online" name="order_type" >
+								<span></span>-->
+							</div>
+						</label>
+						<!--<label onclick="javascript:setorderMode('pickup');">
+							<div class="sel_order_type">
+								<img src="assets/images/pick_up_icon.png" alt="">
+								<h3>Pickup your order</h3>
+							</div>
+							<div class="sel_order_custom">
+							</div>
+						</label>-->
+					</div>
+				</div>  	
+			</div>
+
+			<div data-role="panel" id="sidemenu" data-display="overlay" >
+							<h3 class="side_heading">Categories</h3>
+							<!--<div class="sidemenu_wrapper">-->
+								<div id="menu_items" class="side_navs"></div>
+							<!--</div>-->
+							
+			</div>
+
+			<div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+
+		</div>
+
+<!--categories page-->
+	
+	<div data-role="page" data-dom-cache="true" id="categoriesPage" class="bg-white">
+		<div data-role="header" data-position="fixed" class="bg-white b_00 main_header" data-tap-toggle="false"> 
+			<div class="header_left">
+				<a href="#dashboard" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+			</div>
+			<div class="header_center">
+				<div class="login_header">
+					<a href="#" class="main_logo">
+						<img src="assets/images/logo.png" alt="" class="img-responsive" />
+					</a>
+				</div>
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+					<a href="javascript:viewcart();">
+						<img src="assets/images/product_cart_new.png" alt=""/>
+					</a>
+					 <a href="javascript:viewwishlist();">
+						<img src="assets/images/wishlist_icon.png" alt=""/>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="header_search">
+				<form id="home_search1">
+				<input type="search" class="home_search" id="home_searchbtn1" data-role="none" placeholder="Search Here.." >
+			</form>
+		</div>
+		<div data-role="content" class="ui-content p_0"> 			
+			
+		  <div class="middle_content">
+					
+					<div class="repeat_section pt-20">
+					    
+						<div id="menusection_cat"></div>
+						
+					</div>
+					
+	      </div>
+			
+	    </div>
+
+		<div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+
+    </div>
+
+<!--subcat page-->
+	
+<div data-role="page" data-dom-cache="true" id="subcatpg" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_00 main_header" data-tap-toggle="false"> 
+				
+			   
+			   <div class="header_left">
+				<a href="#categoriesPage" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+				<h4 id="header_title_subcat" class="header_title">sMarket</h4>
+		   </div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+			   
+			   
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				
+				 <div id="subcat_main"></div>
+
+  			</div>
+
+			<div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+</div>
+
+<!--homepage-->
+	
+	<div data-role="page" data-dom-cache="true" id="homepage" class="bg-white">
+		<div data-role="header" data-position="fixed" class="bg-white b_00 main_header" data-tap-toggle="false"> 
+			<div class="header_left">
+				<!-- <a href="#dashboard" class="back_btn" data-role="none"> -->
+				<a href="#" data-rel="back" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+				<h4 id="header_title" class="header_title">sMarket</h4>
+			</div>
+			<div class="header_right">
+				<!-- <div class="header_icons">
+					<a href="#dashboard">
+						<img src="assets/images/back_new.png" alt=""/>
+					</a>
+					<a href="#my_profile">
+						<img src="assets/images/profile_icon.png" alt=""/>
+					</a>
+				</div> -->
+			</div>
+			
+			
+		</div>
+
+		<div data-role="content" class="ui-content p_0"> 			
+			
+				<div class="middle_content">
+					
+					<div class="repeat_section pt-20">
+					    <div id="menusection"></div>
+						
+					</div>
+					
+						</div>
+				<div class="menu_bottom">
+					<!--<a href="javascript:void(0)" class="menu_btn" onclick="showMenu()">
+						<!--<img src="assets/images/menu_icon.png" class="img-responsive" alt="" />->
+						<span>MENU</span>
+					</a>-->			
+					<div id="viewCart" class="viewCart_bottom">
+						<div class="cust_footer">
+							<div class="cart_foo">
+								<p>1 Item</p>
+								<h1>Rs. 225</h1>
+								<p>Plus Taxes</p>
+							</div>
+								<button class="custo_btn" onClick="viewCart()">View Cart</button>
+							</div>
+						<!--<a href="javascript:viewcart1();" class="view_cart">View Cart</a>-->
+					</div>
+					<!--<div class="menu_items" id="menu_items" style="text-align:left !important;">
+						<ul>
+							<li><a href="#">Brunches</a></li>
+							<li><a href="#">Toast</a></li>
+							<li><a href="#">Clean Bowl Meal</a></li>
+							<li><a href="#">Healthy Treats</a></li>
+							<li><a href="#">Beverages</a></li>
+						</ul>
+					</div>		-->									
+				</div>
+			
+						<div class="cart_main" id="cart_main">
+							
+					   	</div>
+						<div class="overlay"></div>
+						<div class="overlay1"></div>
+									
+					</div>
+						<div data-role="panel" id="sidemenu_1" data-display="overlay" >
+							<h3 class="side_heading">Categories</h3>
+							<!--<div class="sidemenu_wrapper">-->
+								<div id="menu_items_1" class="side_navs"></div>
+							<!--</div>-->
+							
+						</div>
+					<div id="productpop" data-role="popup" data-overlay-theme="a" data-transition="pop" data-position-to="origin" theme="b">
+									<a href="#homepage" class="close_btn">+</a>
+									<div class="csafePop_inner text-center">
+										
+									<div id="wishlist_div"></div>
+									<div class="csafePop_inner text-center" id="prdctlist">
+									</div>	
+										
+									</div>
+					</div>
+
+			<div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+		
+          </div>
+	
+<!--/homepage-->
+	
+	<div data-role="page" data-dom-cache="true" id="promo_codes" class="bg-white">
+		<div data-role="header" data-position="fixed" class="bg-white b_00"> 
+			<div class="inner_header bg-white">
+				<div class="header_left">
+					<div class="back_btn">
+						<a href="#" data-rel="back"><img src="assets/images/backBtn2.png" class="img-responsive" alt=""></a>
+					</div>
+				</div>
+				<div class="header_center">
+					<a href="#" class="main_logo">
+						<img src="assets/images/logo.png" alt="" class="img-responsive" />
+					</a>
+				</div>
+				<div class="header_right"></div>
+				
+				
+			</div>
+		</div>
+		<div data-role="content" class="ui-content">
+			<div class="promo_form">
+				<input type="text" data-role="none" placeholder="Enter Promo Code">
+				<a href="#">Apply</a>
+			</div>
+			<div class="coupon_heading">Available Coupons</div>
+			
+			<div class="coupon_section">
+				<div class="coupon_block">
+					<h3 class="coupon_title">BDT75 Off</h3>
+					<h4 class="coupon_desc">Get 30% OFF upto BDT75 + 1 Desert Upto BDT100</h4>
+					<p class="coupon_brief">On order of BDT499 and above. T&C apply</p>
+					
+					<div class="coupon_code_section">
+						<span class="coupon_no">Seventy75</span>
+						<a href="#" class="apply_code_btn">Apply</a>
+					</div>
+				</div>
+				<div class="coupon_block">
+					<h3 class="coupon_title">BDT55 Off</h3>
+					<h4 class="coupon_desc">Get 20% OFF upto BDT55 + 1 Desert Upto BDT50</h4>
+					<p class="coupon_brief">On order of BDT499 and above. T&C apply</p>
+					
+					<div class="coupon_code_section">
+						<span class="coupon_no">Fifty55</span>
+						<a href="#" class="apply_code_btn">Apply</a>
+					</div>
+				</div>
+				<div class="coupon_block">
+					<h3 class="coupon_title">BDT125 Off</h3>
+					<h4 class="coupon_desc">Get 30% OFF upto BDT75 + 1 Desert Upto BDT70</h4>
+					<p class="coupon_brief">On order of BDT499 and above. T&C apply</p>
+					
+					<div class="coupon_code_section">
+						<span class="coupon_no">Offer125</span>
+						<a href="#" class="apply_code_btn">Apply</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+
+<!--orderStatus-->
+<div data-role="page" data-dom-cache="true" id="order_status" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" data-tap-toggle="false" data-hide-during-focus="false" class="bb0 bg-white">
+			   <div class="main_header bg-white">
+					<div class="header_left">			   		
+						
+				   </div>
+				   <div class="header_center">
+				   		<div class="main_logo">
+							<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+						</div>
+				   </div>
+				   <div class="header_right"></div>
+				</div>
+			   
+			   <div class="order_status">
+				  <div class="order_progress">
+				  	<div class="progress_thread">
+						<h3 class="progress_title">28 June 2020, 11:20 AM</h3>
+				  		<div class="progress_dot active_dot"></div>
+				  		<div class="progress_content">
+							<h3 class="progress_text">Payment Recieved</h3>
+				  		</div>
+				  	</div>
+				  	<div class="progress_thread">
+						<h3 class="progress_title">Chandigarh India</h3>
+				  		<div class="progress_dot active_dot"></div>
+				  		<div class="progress_content">
+							<h3 class="progress_text">Order Confirmed</h3>
+				  		</div>
+				  	</div>
+				  	<div class="progress_thread">
+						<h3 class="progress_title">Chandigarh India</h3>
+				  		<div class="progress_dot active_dot"></div>
+				  		<div class="progress_content">
+							<h3 class="progress_text">Being Prepared</h3>
+				  		</div>
+				  	</div>
+				  	<div class="progress_thread">
+						<h3 class="progress_title">Chandigarh India</h3>
+				  		<div class="progress_dot runing_st"></div>
+				  		<div class="progress_content">
+							<h3 class="progress_text">Out For Delivery</h3>
+				  		</div>
+				  	</div>	
+				  	<div class="progress_thread">
+						<h3 class="progress_title">Chandigarh India</h3>
+				  		<div class="progress_dot"></div>
+				  		<div class="progress_content">
+							<h3 class="progress_text">Reached</h3>
+				  		</div>
+				  	</div>				  	
+				  </div>
+			  </div>
+			   
+           </div>
+           
+           <div role="main" class="ui-content p_0 inner_content">	
+			   <div class="sub_header text-center">
+					<h3 class="order_outlet_name">ORDER CONFIRMED</h3>
+				   <p class="mt-0 mb-0">Your Order is on the way</p>
+				</div>		
+				<!--<div id="finalordertable"></div>	-->
+			  
+			   
+			   <div class="order_map">
+				<div class="order_map_inner">
+				  <div id="order_track_map"></div>
+				  <div class="order_track_details">
+				  	<div class="order_track_left">
+						<h3>Delivery Address</h3>
+						<p>D-58, sector 66, Noida</p>
+				  	</div>
+				  	<div class="order_track_right">
+						<p>Arrived in</p>
+						<h1>25</h1>
+						<p>Minutes</p>
+				  	</div>
+				  </div>
+			    </div>
+			  </div>
+			   
+  			</div>
+           
+           
+        	</div>
+<!--/orderStatus-->
+
+
+<!--payment-->
+	
+	<div data-role="page" data-dom-cache="true" id="my_cart" class="full_height bg-white">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false" data-hide-during-focus="false" class="main_header bg-white">
+			<div class="header_left">
+				<a href="#categoriesPage" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">
+				<div class="main_logo">
+					<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+				</div>				
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+          		      		
+           </div>
+           
+        <div role="main" class="ui-content m-p10">	
+			  
+			  <!-- <h3 class="mt-0" id="p_deliverytype">ORDERED FOR</h3> -->
+			  <div class="order_status_add">
+					<div class="d_flex justify_between">
+						<h3 class="order_st_heading" id="p_deliverytype">ORDERED FOR</h3>
+						<a href="#sel_location_manually" class="more_link">Change Address ></a>
+					</div>
+			 </div>
+			      <div id="p_deliverydiv"></div>
+                  <br>
+				  <div class="ui-bar-c ui-corner-all ui-shadow"  style="display: none;" id="mapdiv">
+                    <div id="map_canvas" style="height:230px;"></div>
+                  </div>
+				  <br>
+
+				  <div id="adresslist_pop"></div>
+							<!--<div class="location_input2">
+								<img src="assets/images/check_location2.png" alt="">
+								<h3>
+									Delivering to Chandigarh, INDIA
+									<span>Delivery in 45 mins with live tracking</span>
+								</h3>
+								<a href="#sel_location_manually">Change</a>
+							</div>-->
+			      <div id="cartmain" class="cart_item"></div>
+
+
+        </div>
+
+		<div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+	</div>
+<!--payment-->
+	
+	<!--payment-->
+	
+	<div data-role="page" data-dom-cache="true" id="payment" class="full_height bg-white">
+        <div data-role="header" data-position="fixed" data-tap-toggle="false" data-hide-during-focus="false" class="main_header bg-white">
+			
+			<div class="header_left">
+				<!-- <a href="#" class="back_btn" data-rel="back" data-role="none"> -->
+				<a href="#my_cart" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">
+				<div class="main_logo">
+					<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+				</div>				
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+				        		
+         </div>
+           
+        <div role="main" class="ui-content p_0">	
+				<div class="pay-section">
+
+						<div id="delivery_slot" class="dslot">
+					     <h4>When would you like your express items?</h4>
+								<div class="ui-grid-a">
+										<div class="ui-block-a">
+										    <label>Date</label>
+											<input type="date" name="cdate" id="cdate" />
+										</div>
+										<div class="ui-block-b">
+										    <label>Time slot</label>
+											<div class="time_slot">
+											<select id="cslot" name="cslot" data-role="none">
+											    <option value="">-Time Slot-</option>
+												<option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+												<option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+												<option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
+												<option value="12:30 PM - 1:00 PM">12:30 PM - 1:00 PM</option>
+												<option value="1:00 PM - 1:30 PM">1:00 PM - 1:30 PM</option>
+												<option value="1:30 PM - 2:00 PM">1:30 PM - 2:00 PM</option>
+												<option value="2:30 PM - 3:00 PM">2:30 PM - 3:00 PM</option>
+												<option value="3:00 PM - 3:30 PM">3:00 PM - 3:30 PM</option>
+												<option value="3:30 PM - 4:00 PM">3:30 PM - 4:00 PM</option>
+												<option value="4:30 PM - 5:00 PM">4:30 PM - 5:00 PM</option>
+												<option value="5:30 PM - 6:00 PM">5:30 PM - 6:00 PM</option>
+												<option value="6:30 PM - 7:00 PM">6:30 PM - 7:00 PM</option>
+											</select>
+											</div>
+										</div>
+								</div>
+
+						</div><br>
+
+                    <h4>Payment Mode</h4>
+      				
+					<div class="pay-section_inner" id="paytmopt" onclick="javascript:setviewcart('paytm');">
+						
+						<div class="pay-block1" onclick="javascript:setviewcart('paytm');">
+								<label>
+									<div class="pay_description">
+									   <img src="assets/images/online_pay.png" class="img-responsive payytype" alt="Card"><h4>Online Payment</h4>
+									</div>
+									<!-- <div class="radio_input">
+										<input type="radio" name="payment" data-role="none" />
+										<span class="input_radio"></span>
+									</div> -->
+								</label>
+								
+							<!--<div class="pay_block_inner">
+								<label>
+									<div class="radio_input">
+										<input type="radio" name="payment" data-role="none" />
+										<span class="input_radio"></span>
+									</div>
+								</label>						
+							</div>-->
+								
+						</div>						
+      				</div>
+					<div class="pay-section_inner" id="cashopt" onclick="javascript:setviewcart('cash');">
+						<!--<h4 class="payment_heading">Cash on Delivery</h4>-->
+						<div class="pay-block1" onclick="javascript:setviewcart('cash');">
+								<label>
+									<div class="pay_description">
+									   <img src="assets/images/card.png" class="img-responsive payytype" alt="Cash"><h4>Cash Only</h4>
+									</div>
+									<!-- <div class="radio_input">
+										<input type="radio" name="payment" data-role="none" />
+										<span class="input_radio"></span>
+									</div> -->
+								</label>
+								
+							<!--<div class="pay_block_inner">
+								<label>
+									<div class="radio_input">
+										<input type="radio" name="payment" data-role="none" />
+										<span class="input_radio"></span>
+									</div>
+								</label>						
+							</div>-->
+								
+						</div>						
+      				</div>	
+  				</div>
+
+				<div class="text-center mt-20" style="margin: 10px !important;"><a href="javascript:checkviewcart();" data-role="none" class="cart_btn">Order Now</a></div>
+        	</div>
+
+			<div class="confirmation_block bg_textured2" id="pay_confirm_pop" data-role="popup">
+						<img src="images/right_mark.png" class="img-responsive" alt="">
+						<h3 id="pdiv">Your Pickup has been Confirmed.</h3>
+						<div class="confirmation_box" id="pickupcode">Pickup Code : </div>
+						<div class="btn_wrapper">
+							<a href="#categoriesPage" class="btn_primary_new2 text_black" style="display: inline-block;width: initial">Close</a>
+						</div>
+						
+			</div>
+
+	</div>
+<!--/payment-->
+	
+	<!--Thanks-->
+		<!--<div data-role="page" data-dom-cache="true" id="thanks" class="full_height">
+           <div data-role="header" data-position="fixed" data-tap-toggle="false" data-hide-during-focus="false" class="main_header dashboard_header">
+				<!--<div class="login_header">
+					<a href="#dashboard" class="back_btn"><img src="assets/images/backBtn.png" alt="" class="img-responsive" /></a>
+				</div> ->
+			   <div class="header_left">
+			   		<a href="#" class="back_btn2" data-rel="back" data-role="none">
+						<img src="assets/images/backBtn.png" class="img-responsive" alt="">
+				    </a>
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>
+			   </div>  
+           </div>
+           
+           <div role="main" class="ui-content p_0">
+			   <img src="assets/images/paradise-circle.jpg" class="img-responsive" alt="">
+			   <div class="text-center p_circle">
+			   		<h2>Thank you for being part of Paradise Circle Loyalty</h2>
+					<p>You can redeem 3 Free Biryani or  1200 Points</p>
+			   </div>
+			   <div class="padding0_10px">
+			    <a href="#feedback" style="width: 200px; margin: 0 auto" class="btn btn_primary login_btn">Share Your Feedback</a>
+			   </div>	   
+ 		   </div>
+           
+           
+        	</div>-->
+<!--/Thanks-->
+	
+
+<!--My Profile-->
+
+<!--/My Profile-->
+	
+	
+<!--page-->
+      <div data-role="page" data-dom-cache="true" id="sel_location" class="full_height">
+	<div data-role="header" data-position="fixed" class="bg_transparent b_0"> 
+		<div class="login_header">
+			<a href="#" data-rel="back" class="back_btn"><img src="assets/images/backBtn.png" alt="" class="img-responsive" /></a>
+		</div>
+	</div>
+		<div role="main" class="ui-content p_0 bg_transparent">
+			<div class="location_selection">
+				<div class="location_map">
+					<div id="map"></div>
+				</div>
+				<div class="location_add">
+					<div class="location_header">
+						<div class="input_location">
+							<label>Search Location</label>				
+							<input type="text" data-role="none" placeholder="Search for location">
+						</div>
+					</div>				
+					<a href="#homepage" class="location_block">
+						<div class="sel_block_icon1">
+							<img src="assets/images/map_marker1.png" alt="" class="img-responsive" />
+						</div>
+						<div class="sel_block_content">
+							<p class="text-red">Use current location</p>
+						</div>
+					</a>
+			<div class="location_block">
+				<div class="sel_block_content pb-0">
+					<h3 class="location_heading">SAVE ADDRESSES</h3>
+				</div>
+			</div>
+			<a href="#dashboard" class="location_block">
+				<div class="sel_block_icon">
+					<img src="assets/images/home_address_icon.png" alt="" class="img-responsive" />
+				</div>
+				<div class="sel_block_content bb1">
+					<h3>Home</h3>
+					<p>House No. 3, Niketan Nagar, Ghaziabaad 201009</p>
+				</div>
+			</a>
+			
+			<a href="#dashboard" class="location_block">
+				<div class="sel_block_icon">
+					<img src="assets/images/other_location_icon.png" alt="" class="img-responsive" />
+				</div>
+				<div class="sel_block_content bb1">
+					<h3>Other</h3>
+					<p>House No. 3, Niketan Nagar, Ghaziabaad 201009</p>
+				</div>
+			</a>
+			
+			<a href="#dashboard" class="location_block">
+				<div class="sel_block_icon">
+					<img src="assets/images/office_icon.png" alt="" class="img-responsive" />
+				</div>
+				<div class="sel_block_content bb2">
+					<h3>Office</h3>
+					<p>House No. 3, Niketan Nagar, Ghaziabaad 201009</p>
+				</div>
+			</a>
+			
+			
+			</div>
+			</div>
+		</div>
+	</div>
+<!--page-->
+
+<!--page-->
+      <div data-role="page" data-dom-cache="true" id="sel_location_manually" class="full_height bg-white">
+		<div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+			
+			<div class="header_left">
+				<a href="#" class="back_btn" data-rel="back" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">
+				<div class="main_logo">
+					<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+				</div>				
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+			
+		</div>
+		<div role="main" class="ui-content p_0 bg_transparent">
+			<div class="location_block">
+				<h3 class="location_heading" style="padding-left: 15px">Delivery Address</h3>				
+			</div>
+			<a href="javascript:openaddrpop();" class="location_block" style="padding-left: 15px" >
+				<div class="sel_block_icon1">
+					<img src="assets/images/plus.png" alt="" class="img-responsive" />
+				</div>
+				<div class="sel_block_content">
+					<h3>Add Address</h3>
+				</div>
+			</a>
+			
+            <!-- <h4 class="location_heading" style="padding-left: 15px">Available Address</h4> -->
+			<div id="addr_div" style="padding: 0 20px;"></div>
+			<!--<a href="#dashboard" class="location_block">
+				<div class="sel_block_icon">
+					<img src="assets/images/home_address_icon.png" alt="" class="img-responsive" />
+				</div>
+				<div class="sel_block_content bb1">
+					<h3>Home</h3>
+					<p>House No. 3, Niketan Nagar, Ghaziabaad 201009</p>
+				</div>
+			</a>-->
+			
+			
+		</div>
+
+        <div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			<div class="footer_nav">
+				<ul>
+					<li class="pt-10-0 pb-10-0">
+						<a href="javascript:viewcart();">
+							<h3>Continue</h3>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+        <!--popup 1 -->
+		<!--<div data-role="popup" id="add_address_pop" data-position-to="window" data-transition="pop" class="bg_white add_pop">
+				<div class="address_form">
+					<div class="address_logo mb-10 mt-10">
+						<img src="images/logo3.png" class="img-responsive" alt="">
+					</div>
+					<h4 class="text-center">Add New Address</h4>
+					<div class="login_form mt-20">
+						<div class="address_input">
+							<input type="text" id="address_fname" placeholder="First Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_lname" placeholder="Last Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="ui-grid-a">
+						<div class="ui-block-a address_input" style="width:22%;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="address_mobile_prefix" readonly/>
+						</div>
+						<div class="ui-block-b address_input" style="width:78%;">
+							<input type="tel" id="address_mobile" placeholder="Mobile Number*" data-role="none" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						</div>
+
+						<div class="address_input">
+							<input type="address" id="address_add1" placeholder="Address 1*" data-role="none" onblur="javascript:checkaddress('address_add1');"/>
+						</div>
+						<div class="address_input">
+							<input type="address" id="address_add2" placeholder="Address 2" data-role="none" onblur="javascript:checkaddress('address_add2');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_city" placeholder="City*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="number" id="address_pincode" placeholder="Postal Code*" data-role="none" maxlength="6" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						<div class="address_select">
+							
+							<select name="address_state" id="address_state" data-role="none">
+								 <option value="">--State--</option>
+							 </select>
+						</div>
+						
+					</div>
+				</div>
+				<div class="footer_nav">
+					<ul>
+						<li class="pb-10">
+							<a href="javascript:addnew_address();">
+								<h3>Submit</h3>
+							</a>
+						</li>
+					</ul>
+				</div>
+		</div>-->
+
+		<!--popup 2 -->
+		<!--<div data-role="popup" id="edit_address_pop" data-position-to="window" data-transition="pop" class="bg_white add_pop">
+				<div class="address_form">
+					<div class="address_logo mb-10 mt-10">
+						<img src="images/logo3.png" class="img-responsive" alt="">
+					</div>
+					<h4 class="text-center">Edit Address</h4>
+					<div class="login_form mt-20">
+					    <input type="hidden" id="address_id_edit" />
+						<div class="address_input">
+							<input type="text" id="address_fname_edit" placeholder="First Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_lname_edit" placeholder="Last Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="ui-grid-a">
+						<div class="ui-block-a address_input" style="width:22%;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="address_mobile_edit_prefix" readonly/>
+						</div>
+						<div class="ui-block-b address_input" style="width:78%;">
+							<input type="tel" id="address_mobile_edit" placeholder="Mobile Number*" data-role="none" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						</div>
+
+						<div class="address_input">
+							<input type="address" id="address_add1_edit" placeholder="Address 1*" data-role="none" onblur="javascript:checkaddress('address_add1_edit');"/>
+						</div>
+						<div class="address_input">
+							<input type="address" id="address_add2_edit" placeholder="Address 2" data-role="none" onblur="javascript:checkaddress('address_add2_edit');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_city_edit" placeholder="City*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="number" id="address_pincode_edit" placeholder="Postal Code*" data-role="none" maxlength="6" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						<div class="address_select">
+							
+							<select name="address_state_edit" id="address_state_edit" data-role="none">
+								 <option value="">--State--</option>
+							 </select>
+						</div>
+						
+					</div>
+				</div>
+				<div class="footer_nav">
+					<ul>
+						<li class="pb-10">
+							<a href="javascript:edit_address();">
+								<h3>Submit</h3>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>-->
+
+	</div>
+
+<!--page-->
+
+      <div data-role="page" data-dom-cache="true" id="sel_store_manually" class="full_height bg-white">
+		<div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+			
+			<div class="header_left">
+				<a href="#" class="back_btn" data-rel="back" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">
+				<div class="main_logo">
+					<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+				</div>				
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+			
+		</div>
+		<div role="main" class="ui-content p_0 bg_transparent">
+			<div class="location_block">
+				<h3 class="location_heading" style="padding-left: 15px">Select Store</h3>				
+			</div>
+			<br>
+			
+			
+			<div id="stores_div" style="padding: 0 20px;"></div>
+			
+			
+		</div>
+
+	</div>
+	
+<!--Past Orders-->
+
+<div data-role="page" data-dom-cache="true" id="my_profile" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				
+			   
+			   <div class="header_left">
+				<a href="#categoriesPage" class="back_btn" data-role="none">
+					<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+				</a>
+		   </div>
+			<div class="header_center">
+				<div class="main_logo">
+					<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+				</div>				
+			</div>
+			<div class="header_right">
+				<div class="header_icons">
+          			<!--<a href="#my_cart">
+          				<img src="assets/images/shopping_cart.png" alt=""/>
+          			</a>-->
+          		</div>  
+			</div>
+			   
+			   
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				<div class="sub_header text-center">
+					<h3 class="order_outlet_name">My Account</h3>
+				</div>
+				
+				<div class="my_account">
+					<ul class="my_account_inner">
+						<li>
+							<a href="javascript:showPreviousOrders();"><img src="assets/images/my_orders.png" alt="" />My Orders</a>
+						</li>
+						<li>
+							<a href="#my_address">
+								<img src="assets/images/manage_address.png" alt="" /> Manage Address
+							</a>
+						</li>
+						<li><a href="javascript:gotoEditprofile();"><img src="assets/images/edit_profile.png" alt="" />Edit Profile</a></li>
+						<li><a href="javascript:logoutApp();"><img src="assets/images/logout_icon.png" alt="" />Log Out</a></li>
+					</ul>
+				</div>
+				
+  			</div>
+           <div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+           
+    </div>
+	
+	<!--page-->
+	<div data-role="page" data-dom-cache="true" id="my_orders" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				<div class="header_left">
+					<a href="#categoriesPage" class="back_btn" data-role="none">
+						<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+					</a>
+			   </div>
+				<div class="header_center">
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>				
+				</div>
+				<div class="header_right">
+					<div class="header_icons">
+						<!--<a href="#my_cart">
+							<img src="assets/images/shopping_cart.png" alt=""/>
+						</a>-->
+					</div>  
+				</div>
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				<div class="sub_header text-left">
+					<h3 class="order_outlet_name">My Orders</h3>
+				</div>
+				<div class="repeat_section pt-20">
+						<div id="orderlist"></div>
+			    </div>
+  			</div>
+           <div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+
+           <!--popup-->
+		   <div class="confirmation_block2 bg_textured2" id="order_items_pop" data-role="popup">
+						<img src="images/right_mark.png" class="img-responsive" alt="">
+						<h3>Order Items</h3>
+						<div id="item-details"></div>
+						<div class="btn_wrapper">
+							<a href="#my_orders" class="btn_primary_new2 text_black" style="display: inline-block;width: initial">Close</a>
+						</div>
+						
+			</div>
+           
+    </div>
+
+	<!--page-->
+	<div data-role="page" data-dom-cache="true" id="wish" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				<div class="header_left">
+					<a href="#categoriesPage" class="back_btn" data-role="none">
+						<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+					</a>
+			   </div>
+				<div class="header_center">
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>				
+				</div>
+				<div class="header_right">
+					<div class="header_icons">
+						<!--<a href="#my_cart">
+							<img src="assets/images/shopping_cart.png" alt=""/>
+						</a>-->
+					</div>  
+				</div>
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				<div class="sub_header text-left">
+					<h3 class="order_outlet_name">My Wishlist</h3>
+				</div>
+				<div class="repeat_section pt-20">
+						<div id="wish_details"></div>
+			    </div>
+  			</div>
+           <div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+           
+    </div>
+	
+	<div data-role="page" data-dom-cache="true" id="my_address" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				<div class="header_left">
+					<a href="#" class="back_btn" data-rel="back" data-role="none">
+						<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+					</a>
+			   </div>
+				<div class="header_center">
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>				
+				</div>
+				<div class="header_right">
+					<div class="header_icons">
+						<!--<a href="#my_cart">
+							<img src="assets/images/shopping_cart.png" alt=""/>
+						</a>-->
+					</div>  
+				</div>
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				<div class="sub_header text-center">
+					<h3 class="order_outlet_name">Delivery Addresses</h3>
+				</div>
+				
+				<div class="my_account">
+					<div class="order_inner">
+						<h3 class="heading_my_account">Saved Address</h3>
+
+						<div id="addr_div_profile" style="padding: 0 20px;"></div>
+						<!-- <ul>
+							<li>
+								<div class="past_order">
+									<div class="past_brief">
+										<h3>Home</h3>
+										<h4>House No. 3, Niketan Nagar, Ghaziabaad 201009</h4>
+									</div>
+									<div class="past_description">
+										<p>Mob: 9015821530</p>
+										<div class="order_action">
+											<a href="#sel_location_manually" class="reorder_btn" data-role="none">Edit</a>
+											<a href="#" class="reorder_btn" data-role="none">Delete</a>
+										</div>
+										
+									</div>
+								</div>
+							</li>
+						</ul> -->
+					</div>
+				</div>
+  			</div>
+           
+           
+        	</div>
+
+	
+	
+	<!--page-->
+	<div data-role="page" data-dom-cache="true" id="contactus" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				<div class="header_left">
+					<a href="#categoriesPage" class="back_btn" data-role="none">
+						<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+					</a>
+			   </div>
+				<div class="header_center">
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>				
+				</div>
+				<div class="header_right">
+					<div class="header_icons">
+						<!--<a href="#my_cart">
+							<img src="assets/images/shopping_cart.png" alt=""/>
+						</a>-->
+					</div>  
+				</div>
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+				<div class="sub_header text-left">
+					<h3 class="order_outlet_name">Contact Us</h3>
+				</div>
+				<div class="repeat_section pt-20">
+						<div class="mt-20 pb-10 psides">						
+			
+							<h3 class="mb-10">Contact Us: 16516</h3>
+							<!-- <h3 class="mb-10">Mail Us: gettarka@gmail.com</h3> -->
+
+						</div>	
+			    </div>
+  			</div>
+           <div data-role="footer" data-position="fixed" class="footer_home" data-tap-toggle="false" data-hide-during-focus="false">
+			   <div class="footer_nav">
+				<ul>
+					<li>
+						<a href="#categoriesPage">
+							<img src="assets/images/home_icon.png" alt="">
+							<span>Home</span>
+						</a>
+					</li>
+					<li>
+						<a href="#contactus">
+							<img src="assets/images/services_icon.png" alt="">
+							<span>Contact us</span>
+						</a>
+					</li>
+					<li>
+						<a href="#my_profile">
+							<img src="assets/images/my_account_icon.png" alt="">
+							<span>Account</span>
+						</a>
+					</li>
+				</ul>
+			  </div>
+		   </div>
+           
+    </div>
+	<!--page-->
+	<div data-role="page" data-dom-cache="true" id="past_order_details" class="full_height bg-white">
+           <div data-role="header" data-position="fixed" class="bg-white b_0 main_header" data-tap-toggle="false"> 
+				<div class="header_left">
+					<a href="#" class="back_btn" data-rel="back" data-role="none">
+						<img src="assets/images/backBtn2.png" class="img-responsive" alt="">
+					</a>
+			   </div>
+				<div class="header_center">
+					<div class="main_logo">
+						<img src="assets/images/logo_inner.png" class="img-responsive" alt="">
+					</div>				
+				</div>
+				<div class="header_right">
+					<div class="header_icons">
+						<!--<a href="#my_cart">
+							<img src="assets/images/shopping_cart.png" alt=""/>
+						</a>-->
+					</div>  
+				</div>
+			</div>
+           
+           <div role="main" class="ui-content p_0">	
+			   <div class="cart_main_reorder">
+							<h3 class="mt-0">DELIVERED AT</h3>
+							<div class="location_input2">
+								<img src="assets/images/check_location2.png" alt="">
+								<h3>
+									Delivering to your location, Bangladesh
+									<span>Delivery in 45 mins</span>
+								</h3>
+								<a href="#sel_location_manually">Change</a>
+							</div>
+							<div class="cart_item">
+								<div class="cart_item_header bb1">
+									<div class="cart_item_name">
+										<div class="cart_item_inner">
+											<img src="assets/images/veg_sign.png" alt="">
+											<div class="item_name">
+												<span>Avacado and roasted</span>												
+											</div>											
+										</div>
+										<div class="cart_qty">		   				
+											<button  onclick="removeProduct(this)" data-role="none" class="spinner_button removeProduct">-</button>
+											<input class="quantity" min="0" name="quantity" value="1" type="number" data-role="none">
+											<button  onclick="addToCart(this)" class="spinner_button" data-role="none">+</button>
+										</div>
+										<div class="cart_item_price">BDT 180</div>
+									</div>	
+									<div class="pl-20">
+										<p class="item_brief1">Large</p>
+										<a href="#" class="customize_btn ui-link">Customize</a>
+									</div>
+								</div>								
+							</div>
+							<div class="cart_check mt-10">
+								<div class="cart_inner">
+									<div class="inner_text">Item Total:</div>
+									<div class="inner_price">BDT 210</div>
+								</div>
+							</div>
+							<div class="cart_check">
+								<div class="cart_inner">
+									<div class="inner_text">SGST(12%):</div>
+									<div class="inner_price">BDT 25</div>
+								</div>
+							</div>
+							<div class="cart_check">
+								<div class="cart_inner">
+									<div class="inner_text">CGST(12%):</div>
+									<div class="inner_price">BDT 25</div>
+								</div>
+							</div>
+							<div class="cart_check bb1">
+								<div class="cart_inner">
+									<div class="inner_text">Offers 10% off</div>
+									<div class="inner_price">BDT -25</div>
+								</div>
+							</div>
+							<div class="cart_check">
+								<div class="cart_inner">
+									<h3 class="mt-0">To Pay</h3>
+									<h3 class="mt-0">BDT 225</h3>
+								</div>
+							</div>
+							<div class="add_instruction">
+								<p>Any request for the order</p>
+								<a href="javascript:addInstruction1()" class="edit_btn"><img src="assets/images/edit_icon.png" class="img-responsive" alt=""></a>
+							</div>
+							<div id="Instruction1" style="display: none">
+								<div class="special_instructions">
+									<input type="text" placeholder="Add Special Instruction" data-role="none" class="form-control">
+								</div>
+							</div>
+							<div class="mt-10 mb-10 promo_section">
+								<div class="promo_code">
+									<input type="text" data-role="none" value="DJH55J">
+								</div>
+								<div class="promo_btn">
+									<a href="#">Applied</a>
+								</div>
+							</div>
+							<a href="#promo_codes" class="promo_link">Have a  promo Code?</a>
+							<div class="text-center mt-20">
+								<a href="#payment" data-role="none" class="cart_btn">MAKE PAYMENT</a>
+							</div>
+					   	</div>
+				
+  			</div>
+           
+           
+        	</div>
+<!--/Past Orders-->
+
+<div id="wait" style="display:none;width:69px;height:89px;border:0px solid black;position:absolute;top:50%;left:40%;padding:2px;"><img src="assets/images/load.gif" width="60" height="60" /></div>
+
+		<!--popup 1 -->
+		<div data-role="popup" id="add_address_pop" data-position-to="window" data-transition="pop" class="bg_white_add add_pop">
+				<div class="address_form">
+					<div class="address_logo mb-10 mt-10">
+						<img src="images/logo3.png" class="img-responsive" alt="">
+					</div>
+					<h4 class="text-center">Add New Address</h4>
+					<div class="login_form mt-20">
+						<div class="address_input">
+							<input type="text" id="address_fname" placeholder="First Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_lname" placeholder="Last Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="ui-grid-a">
+						<div class="ui-block-a address_input" style="width:22%;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="address_mobile_prefix" readonly/>
+						</div>
+						<div class="ui-block-b address_input" style="width:78%;">
+							<input type="tel" id="address_mobile" placeholder="Mobile Number*" data-role="none" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						</div>
+
+						<div class="address_input">
+							<input type="address" id="address_add1" placeholder="Address 1*" data-role="none" onblur="javascript:checkaddress('address_add1');"/>
+						</div>
+						<div class="address_input">
+							<input type="address" id="address_add2" placeholder="Address 2" data-role="none" onblur="javascript:checkaddress('address_add2');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_city" placeholder="City*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="number" id="address_pincode" placeholder="Postal Code*" data-role="none" maxlength="6" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						<div class="address_select">
+							
+							<select name="address_state" id="address_state" data-role="none">
+								 <option value="">--State--</option>
+							 </select>
+						</div>
+						
+					</div>
+				</div>
+				<div class="add_prompt">*Address language english is required</div>
+				<div class="footer_nav">
+					<ul>
+						<li class="pb-10">
+							<a href="javascript:addnew_address();">
+								<h3>Submit</h3>
+							</a>
+						</li>
+					</ul>
+				</div>
+		</div>
+
+		<!--popup 2 -->
+		<div data-role="popup" id="edit_address_pop" data-position-to="window" data-transition="pop" class="bg_white_add add_pop">
+				<div class="address_form">
+					<div class="address_logo mb-10 mt-10">
+						<img src="images/logo3.png" class="img-responsive" alt="">
+					</div>
+					<h4 class="text-center">Edit Address</h4>
+					<div class="login_form mt-20">
+					    <input type="hidden" id="address_id_edit" />
+						<div class="address_input">
+							<input type="text" id="address_fname_edit" placeholder="First Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_lname_edit" placeholder="Last Name*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="ui-grid-a">
+						<div class="ui-block-a address_input" style="width:22%;">
+							<input type="tel" class="login-input fgprefix" placeholder="+880" data-role="none" id="address_mobile_edit_prefix" readonly/>
+						</div>
+						<div class="ui-block-b address_input" style="width:78%;">
+							<input type="tel" id="address_mobile_edit" placeholder="Mobile Number*" data-role="none" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						</div>
+
+						<div class="address_input">
+							<input type="address" id="address_add1_edit" placeholder="Address 1*" data-role="none" onblur="javascript:checkaddress('address_add1_edit');"/>
+						</div>
+						<div class="address_input">
+							<input type="address" id="address_add2_edit" placeholder="Address 2" data-role="none" onblur="javascript:checkaddress('address_add2_edit');"/>
+						</div>
+						<div class="address_input">
+							<input type="text" id="address_city_edit" placeholder="City*" data-role="none" onkeyup="this.value=this.value.replace(/[^a-zA-Z ]/g,'');"/>
+						</div>
+						<div class="address_input">
+							<input type="number" id="address_pincode_edit" placeholder="Postal Code*" data-role="none" maxlength="6" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+						</div>
+						<div class="address_select">
+							
+							<select name="address_state_edit" id="address_state_edit" data-role="none">
+								 <option value="">--State--</option>
+							 </select>
+						</div>
+						
+					</div>
+				</div>
+				<div class="footer_nav">
+					<ul>
+						<li class="pb-10">
+							<a href="javascript:edit_address();">
+								<h3>Submit</h3>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+<script>
+
+$(function() {
+	'use strict';
+			$( "#filters" ).panel();
+			$( "#sideMenu" ).panel();	
+		});
+
+$("#search_link").on( "click", function() {
+	//alert("asdf");
+	$("#search-box").slideToggle("fast");	
+})
+
+	$("input[name='order_type']").on("change", function(){
+		var _val = $(this).val();		
+		if(_val=="online") {
+			setTimeout(function(){
+				$.mobile.changePage("#sel_location_manually");
+			},10)
+			
+		}
+	})
+
+function myFunction(e) {	
+//console.log(e);
+    $(".dropdown-content").removeClass("show");
+	$(e).siblings(".dropdown-content").toggleClass("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn, .dropbtn img')) {
+
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+</script>
+		<script src="assets/js/picturefill.min.js"></script>
+        <script src="assets/js/lightgallery-all.min.js"></script>
+        <script src="assets/js/jquery.mousewheel.min.js"></script>
+        <script src="assets/js/owl.carousel.min.js"></script>
+        
+        <script src="assets/js/select.js"></script>
+        
+        <script>
+		 function getDealerCodeBoxElement(index) {
+        return document.getElementById('dealercodeBox' + index);
+      }
+      function onDealerKeyUpEvent(index, event) {
+        const eventCode = event.which || event.keyCode;
+        if (getDealerCodeBoxElement(index).value.length === 1) {
+          if (index !== 4) {
+            getDealerCodeBoxElement(index+ 1).focus();
+          } else {
+            getDealerCodeBoxElement(index).blur();
+            // Submit code
+            console.log('submit code ');
+          }
+        }
+        if (eventCode === 8 && index !== 1) {
+          getDealerCodeBoxElement(index - 1).focus();
+        }
+      }
+      function onDealerFocusEvent(index) {
+        for (item = 1; item < index; item++) {
+          const currentElement = getDealerCodeBoxElement(item);
+          if (!currentElement.value) {
+              currentElement.focus();
+              break;
+          }
+        }
+      }			
+			
+			$('.home_carousel').owlCarousel({
+				items:1,
+				loop:true,
+				margin:0,
+				merge:true,
+				autoplayTimeout:3000,
+				autoplaySpeed:700,
+				dots:true,
+				autoplay:true
+			});
+			$('.dashboard_carousel').owlCarousel({
+				items:1,
+				loop:true,
+				margin:0,
+				merge:true,
+				dots:false,
+				autoplayTimeout:3000,
+				nav:true,
+				autoplaySpeed:700,
+				autoplay:true,
+				navText : ["<img src='assets/images/left_arrow.png' class='img-responsive' alt=''>","<img src='assets/images/right_arrow.png' class='img-responsive' alt=''>"]
+			});	
+			$('.offer_carousel').owlCarousel({
+				items:2,
+				loop:true,
+				margin:10,
+				dots:false,
+				merge:true,
+				autoplayTimeout:3000,
+				autoplaySpeed:700,
+				autoplay:true
+			});
+			$('.recommened_carousel').owlCarousel({
+				items:1,
+				loop:true,
+				margin:30,
+				dots:false,
+				merge:true,
+				autoplayTimeout:5000,
+				autoplaySpeed:700,
+				autoplay:true
+			});
+			$('.popular_carousel').owlCarousel({
+				items:2,
+				loop:true,
+				margin:10,
+				dots:false,
+				merge:true,
+				autoplayTimeout:4000,
+				autoplaySpeed:700,
+				autoplay:true
+			});
+			
+			
+			function customizeMenu() {
+				$(".customize_menu").slideDown("fast");
+				$(".overlay").fadeIn(300);
+			}
+			$("input[name='order_type']").on("change", function(){
+				$.mobile.changePage("#dashboard", { transition: "flip"});
+				$(".overlay").fadeOut(300);
+				$("#outlets").slideUp("fast");
+			})
+			/*$("input[name='customize_item']").on("change", function(){
+				//alert("5665");
+				setTimeout(function(){					
+					$(".overlay").fadeOut(300);
+					$(".customize_menu").slideUp("fast");
+				}, 10)
+			});*/
+			
+			$(".overlay").on("click", function(){
+				$(this).fadeOut(300);
+				$(".customize_menu").slideUp("fast");
+				$(".menu_items").height(0);
+				$("#outlets").slideUp("fast");
+				//$("#viewCart").animate({height: "0"});
+				//$("#viewCart").slideUp("fast");
+				$("#cart_main").slideUp("fast");
+			});
+			function viewCart2(){
+				//$("#viewCart").slideUp("fast");
+				$(".overlay").fadeIn(300);
+				$("#cart_main").slideDown("fast");
+			}
+			function add_item(){
+				$(".customize_menu").slideUp("fast");
+				$(".overlay").fadeOut(300);
+				$("#viewCart").slideDown("fast");
+			}
+			$(".overlay1").on("click", function(){
+				$(this).fadeOut(300);
+				$(".menu_items").height(0);
+				
+			});
+			
+			function toggleDiv(e) {
+				$(e).find(".dd_toggle_btn").toggleClass("expand")
+				$(e).next("div").slideToggle("fast");
+			}
+			function toggle_div(e) {
+				$(e).toggleClass("expand")
+				$(e).next("div").slideToggle("fast");
+			}
+			function addInstruction(){
+				$("#Instruction").slideToggle("fast")
+			}
+			function addInstruction1(){
+				$("#Instruction1").slideToggle("fast")
+			}
+			function selOutlet() {
+				$(".overlay").fadeIn(300);
+				//$.mobile.changePage("#dashboard", { transition: "flip"});
+				//setTimeout(function(){
+					$("#outlets").slideDown("fast");
+				//}, 500)
+				
+			}
+			
+			/*function outletSelected(){
+				$("#outlets").slideUp("fast");
+				$(".overlay").fadeOut(300);
+			}
+			*/
+			function addMoreItems(){
+				$(".customize_menu").slideUp("fast");				
+				$(".overlay").fadeOut(300);
+				alert("item Added in Cart");				
+			}
+			
+			function addToCart(e){
+				
+				e.parentNode.querySelector('input[type=number]').stepUp();	
+				$(".customize_menu").slideUp("fast");
+				$("#viewCart").slideUp("fast");
+				/*if(e.parentNode.querySelector('input[type=number]').value >= 1){
+					e.parentNode.querySelector('.add_btn').style.display= 'none';
+				}	*/			
+				customizeMenu()				
+			}
+			function removeProduct(e){
+				e.parentNode.querySelector('input[type=number]').stepDown();
+				
+				/*if(e.parentNode.querySelector('input[type=number]').value < 1){
+					e.parentNode.parentNode.querySelector('.add_btn').style.display= 'block';
+				}*/
+			}
+			
+			function showMenu() {
+				//$(".menu_items").toggle(function(){
+					if($(".menu_items").height()==0) {
+						$(".menu_items").height(250);
+						$(".overlay1").fadeIn(300);
+					}
+					else {
+						$(".menu_items").height(0);
+						$(".overlay1").fadeOut(300);
+					}
+				//})
+			}
+			
+			$(".menu_items ul li").on("click", "a", function(){
+				$(".menu_items ul li").removeClass("active");
+				var _href = $(this).attr("href").slice(1);
+				$('html, body').animate({
+						scrollTop: $('#' + _href).offset().top-70}, 500)
+				//});
+				//console.log(_href);
+				$(this).parent("li").addClass("active");
+				showMenu();
+			});
+			
+			
+			$("document").on("scroll", function(){	
+				var top_offset = $(document).scrollTop();
+				console.log(top_offset);
+				if(top_offset > 180) {
+					$(".outlet_info_block").addClass("scroll_header");
+				}
+				else {
+					$(".outlet_info_block").removeClass("scroll_header");
+				}
+			})
+			
+			
+			$("input[name='payment']").on("change", function(){
+				$(".pay_btn").slideUp("fast");
+				$(this).parents("label.payment_option").find(".pay_btn").slideDown("fast");
+			})
+
+
+			$(".open_vouchers").on("click", function(){
+				$(".voucher_content").slideToggle("fast");
+				$(this).toggleClass("opened");
+			})
+
+			$(document).on("pageshow", "#dashboard", function(){
+				var d_value = $("#rate").data("value");
+				$("#rate > div:lt("+d_value+")").css("background", "url(assets/images/star_active.png) no-repeat center");
+				
+				var d_value1 = $("#rate1").data("value");
+				$("#rate1 > div:lt("+d_value1+")").css("background", "url(assets/images/star_active.png) no-repeat center");
+			});
+			
+			$(document).on("pageshow", "#homepage, #my_orders", function(){
+				$(".rate").each(function(){
+					var d_value = $(this).data("value");
+					$(this).find("div:lt("+d_value+")").css("background", "url(assets/images/star_active.png) no-repeat center");	
+				})	
+							
+			});
+			
+	</script>
+	
+	<script async defer
+  		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrZ7NsmiTFODIy_IB6LPeRvdtF0NSvvcs&callback=initMap">
+	</script>
+	 <script>
+      	var map;
+		var latlng = {lat: 28.6219573, lng: 77.3841195};
+		function initMap() {
+			map = new google.maps.Map(document.getElementById('map'), {
+			  center: latlng,
+			  zoom: 14,
+			  myTypeId: 'roadmap'
+			});
+			map1 = new google.maps.Map(document.getElementById('order_track_map'), {
+			  center: latlng,
+			  zoom: 10,
+			  myTypeId: 'roadmap'
+			});
+			var marker = new google.maps.Marker({position: latlng, map: map, icon:'assets/images/map_marker.png'});
+			var marker1 = new google.maps.Marker({position: latlng, map: map1, icon:'assets/images/map_marker.png'});
+		}
+    </script>
+</body>
+</html>

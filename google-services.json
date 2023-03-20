@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "358796543839",
+    "firebase_url": "https://smarket-8c88f.firebaseio.com",
+    "project_id": "smarket-8c88f",
+    "storage_bucket": "smarket-8c88f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358796543839:android:7b0cacfe28b0984bbb58ea",
+        "android_client_info": {
+          "package_name": "com.mobiquest.smarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "358796543839-otnd7ervvq9o5gf7b1unpkt27h60lqcm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAahS0USNjm8yCv-ST7OK0qN5ASrWQCW48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "358796543839-otnd7ervvq9o5gf7b1unpkt27h60lqcm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
